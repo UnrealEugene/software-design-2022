@@ -6,12 +6,19 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.sql.Connection;
 import java.sql.DriverManager;
+import java.sql.PreparedStatement;
 import java.sql.Statement;
+import java.util.Properties;
 
 /**
  * @author akirakozov
  */
 public class AddProductServlet extends HttpServlet {
+    private final Properties properties;
+
+    public AddProductServlet(Properties properties) {
+        this.properties = properties;
+    }
 
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
@@ -19,11 +26,13 @@ public class AddProductServlet extends HttpServlet {
         long price = Long.parseLong(request.getParameter("price"));
 
         try {
-            try (Connection c = DriverManager.getConnection("jdbc:sqlite:test.db")) {
-                String sql = "INSERT INTO PRODUCT " +
-                        "(NAME, PRICE) VALUES (\"" + name + "\"," + price + ")";
-                Statement stmt = c.createStatement();
-                stmt.executeUpdate(sql);
+            try (Connection c = DriverManager.getConnection(properties.getProperty("database.url"))) {
+                PreparedStatement stmt = c.prepareStatement("INSERT INTO PRODUCT (NAME, PRICE) VALUES (?, ?)");
+
+                stmt.setString(1, name);
+                stmt.setLong(2, price);
+
+                stmt.executeUpdate();
                 stmt.close();
             }
         } catch (Exception e) {
