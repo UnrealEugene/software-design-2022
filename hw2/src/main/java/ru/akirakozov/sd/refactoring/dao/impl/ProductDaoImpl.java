@@ -57,14 +57,7 @@ public class ProductDaoImpl implements ProductDao {
             try (Connection c = getConnection()) {
                 Statement stmt = c.createStatement();
                 ResultSet rs = stmt.executeQuery("SELECT * FROM PRODUCT");
-
-                List<Product> products = new ArrayList<>();
-
-                while (rs.next()) {
-                    String name = rs.getString("name");
-                    int price = rs.getInt("price");
-                    products.add(new Product(name, price));
-                }
+                List<Product> products = collectProductListFromResultSet(rs);
 
                 rs.close();
                 stmt.close();
@@ -82,14 +75,7 @@ public class ProductDaoImpl implements ProductDao {
             try (Connection c = DriverManager.getConnection(properties.getProperty("database.url"))) {
                 Statement stmt = c.createStatement();
                 ResultSet rs = stmt.executeQuery("SELECT * FROM PRODUCT ORDER BY PRICE DESC LIMIT 1");
-
-                Product product = null;
-
-                if (rs.next()) {
-                    String name = rs.getString("name");
-                    int price = rs.getInt("price");
-                    product = new Product(name, price);
-                }
+                Product product = collectProductListFromResultSet(rs).get(0);
 
                 rs.close();
                 stmt.close();
@@ -107,14 +93,7 @@ public class ProductDaoImpl implements ProductDao {
             try (Connection c = DriverManager.getConnection(properties.getProperty("database.url"))) {
                 Statement stmt = c.createStatement();
                 ResultSet rs = stmt.executeQuery("SELECT * FROM PRODUCT ORDER BY PRICE LIMIT 1");
-
-                Product product = null;
-
-                if (rs.next()) {
-                    String name = rs.getString("name");
-                    int price = rs.getInt("price");
-                    product = new Product(name, price);
-                }
+                Product product = collectProductListFromResultSet(rs).get(0);
 
                 rs.close();
                 stmt.close();
@@ -168,5 +147,15 @@ public class ProductDaoImpl implements ProductDao {
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
+    }
+
+    private List<Product> collectProductListFromResultSet(ResultSet rs) throws SQLException {
+        List<Product> products = new ArrayList<>();
+        while (rs.next()) {
+            String name = rs.getString("name");
+            int price = rs.getInt("price");
+            products.add(new Product(name, price));
+        }
+        return products;
     }
 }
