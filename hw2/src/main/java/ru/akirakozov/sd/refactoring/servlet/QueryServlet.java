@@ -2,6 +2,7 @@ package ru.akirakozov.sd.refactoring.servlet;
 
 import ru.akirakozov.sd.refactoring.dao.ProductDao;
 import ru.akirakozov.sd.refactoring.domain.Product;
+import ru.akirakozov.sd.refactoring.util.ResponseHtmlUtil;
 
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
@@ -27,30 +28,24 @@ public class QueryServlet extends HttpServlet {
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
         String command = request.getParameter("command");
 
-        if ("max".equals(command)) {
-            Product product = productDao.findMax();
-            response.getWriter().println("<html><body>");
-            response.getWriter().println("<h1>Product with max price: </h1>");
-            response.getWriter().println(product.getName() + "\t" + product.getPrice() + "</br>");
-            response.getWriter().println("</body></html>");
-        } else if ("min".equals(command)) {
-            Product product = productDao.findMin();
-            response.getWriter().println("<html><body>");
-            response.getWriter().println("<h1>Product with min price: </h1>");
-            response.getWriter().println(product.getName() + "\t" + product.getPrice() + "</br>");
-            response.getWriter().println("</body></html>");
-        } else if ("sum".equals(command)) {
-            long sum = productDao.findSum();
-            response.getWriter().println("<html><body>");
-            response.getWriter().println("Summary price: " + sum);
-            response.getWriter().println("</body></html>");
-        } else if ("count".equals(command)) {
-            long cnt = productDao.findCount();
-            response.getWriter().println("<html><body>");
-            response.getWriter().println("Number of products: " + cnt);
-            response.getWriter().println("</body></html>");
-        } else {
-            response.getWriter().println("Unknown command: " + command);
+        switch (command) {
+            case "max" -> {
+                Product product = productDao.findMax();
+                response.getWriter().println(ResponseHtmlUtil.productToHtml("Product with max price", product));
+            }
+            case "min" -> {
+                Product product = productDao.findMin();
+                response.getWriter().println(ResponseHtmlUtil.productToHtml("Product with min price", product));
+            }
+            case "sum" -> {
+                long sum = productDao.findSum();
+                response.getWriter().println(ResponseHtmlUtil.statisticToHtml("Summary price", sum));
+            }
+            case "count" -> {
+                long cnt = productDao.findCount();
+                response.getWriter().println(ResponseHtmlUtil.statisticToHtml("Number of products", cnt));
+            }
+            default -> response.getWriter().println("Unknown command: " + command);
         }
 
         response.setContentType("text/html");
