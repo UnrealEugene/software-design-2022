@@ -1,0 +1,38 @@
+<html lang="ru">
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<head>
+    <title>Мои дела</title>
+</head>
+<body>
+<h3 th:text="${taskList.name}"></h3>
+<table>
+    <tr th:each="task : ${taskList.getTasks}">
+        <!--/*@thymesVar id="task" type="ru.akirakozov.sd.mvc.model.Task"*/-->
+        <td th:text="${task.name}"></td>
+        <td>
+            <form th:if="${!task.completed}" action="/completeTask" method="POST">
+                <input type="hidden" name="taskListId" th:value="${taskList.id}">
+                <button type="submit" name="id" th:value="${task.id}">
+                    Выполнить
+                </button>
+            </form>
+            <b th:if="${task.completed}">Выполнено</b>
+        </td>
+        <td>
+            <form action="/deleteTask" method="POST">
+                <input type="hidden" name="taskListId" th:value="${taskList.id}">
+                <button type="submit" name="id" th:value="${task.id}">
+                    Удалить
+                </button>
+            </form>
+        </td>
+    </tr>
+</table>
+<form action="/createTask" method="POST">
+    <label for="list">Создать новое дело:</label>
+    <input id="list" name="name" type="text" placeholder="Описание дела...">
+    <button type="submit" name="taskListId" th:value="${taskList.id}">Отправить</button>
+</form>
+<a href="/">Назад</a>
+</body>
+</html>

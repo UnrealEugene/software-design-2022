@@ -1,0 +1,34 @@
+<html lang="ru">
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<head>
+    <title>Мои дела</title>
+</head>
+<body>
+<h3>Ваши списки дел:</h3>
+<table>
+    <tr th:each="taskList : ${taskLists}">
+        <!--/*@thymesVar id="taskList" type="ru.akirakozov.sd.mvc.model.TaskList"*/-->
+        <td th:text="${taskList.name}"></td>
+        <td>
+            <form action="/taskList" method="GET">
+                <button type="submit" name="id" th:value="${taskList.id}">
+                    Перейти
+                </button>
+            </form>
+        </td>
+        <td>
+            <form action="/deleteTaskList" method="POST">
+                <button type="submit" name="id" th:value="${taskList.id}">
+                    Удалить
+                </button>
+            </form>
+        </td>
+    </tr>
+</table>
+<form action="/createTaskList" method="POST">
+    <label for="list">Создать новый список дел:</label>
+    <input id="list" name="name" type="text" placeholder="Название списка дел...">
+    <button type="submit">Отправить</button>
+</form>
+</body>
+</html>
